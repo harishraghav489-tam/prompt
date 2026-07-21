@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, LogIn } from "lucide-react";
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth/auth-context";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
@@ -181,5 +182,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner fullScreen label="Loading..." />}>
+      <LoginForm />
+    </Suspense>
   );
 }
