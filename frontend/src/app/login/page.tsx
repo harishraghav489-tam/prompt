@@ -1,8 +1,8 @@
 "use client";
 
 import { Eye, LogIn } from "lucide-react";
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,14 +12,24 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
   const { login } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (errorParam) {
+      setLoginError(errorParam);
+    }
+  }, [errorParam]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setLoginError(null);
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password.trim()) {
@@ -44,10 +54,11 @@ export default function LoginPage() {
       });
       router.push("/challenge");
     } catch (error) {
+      const msg = error instanceof Error ? error.message : "Unable to sign in right now.";
+      setLoginError(msg);
       toast({
         title: "Sign-in failed",
-        description:
-          error instanceof Error ? error.message : "Unable to sign in right now.",
+        description: msg,
         variant: "destructive",
       });
     } finally {
@@ -56,6 +67,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    setLoginError(null);
     if (!supabase || !isSupabaseConfigured) {
       toast({
         title: "Supabase is not configured",
@@ -79,6 +91,7 @@ export default function LoginPage() {
     });
 
     if (error) {
+      setLoginError(error.message);
       toast({
         title: "Google sign-in failed",
         description: error.message,
@@ -94,6 +107,11 @@ export default function LoginPage() {
           <h1 className="text-2xl font-black">PROMPT WAR</h1>
           <p className="mt-5 text-xl font-bold">Welcome Back!</p>
           <p className="mt-2 text-sm font-medium text-slate-600">Login to continue</p>
+          {loginError && (
+            <div className="mt-5 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold rounded-lg text-center animate-pulse">
+              ⚠️ {loginError}
+            </div>
+          )}
         </div>
 
         <form onSubmit={(event) => void handleSubmit(event)} className="mt-8 space-y-5">
