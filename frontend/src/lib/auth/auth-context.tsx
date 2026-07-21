@@ -119,11 +119,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data } = await supabase.auth.getSession();
         const session = data.session;
         if (session?.user) {
-          const supabaseUser = createSupabaseUser(session.user);
-          await syncSupabaseProfile(supabaseUser);
           localStorage.setItem("promptwar_token", session.access_token);
-          localStorage.setItem("promptwar_user", JSON.stringify(supabaseUser));
-          setUser(supabaseUser);
+          try {
+            const { data: djangoUser } = await authApi.me();
+            localStorage.setItem("promptwar_user", JSON.stringify(djangoUser));
+            setUser(djangoUser);
+          } catch (err) {
+            const supabaseUser = createSupabaseUser(session.user);
+            await syncSupabaseProfile(supabaseUser);
+            localStorage.setItem("promptwar_user", JSON.stringify(supabaseUser));
+            setUser(supabaseUser);
+          }
           await refreshTimer();
           setIsLoading(false);
           return;

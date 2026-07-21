@@ -66,7 +66,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
                     email=email,
                     name=name,
                     college=user_metadata.get('college', 'Bannari Amman Institute of Technology'),
-                    department=user_metadata.get('department', 'AI & DS'),
+                    department=user_metadata.get('department', 'AIML'),
                     role=role,
                     password_hash=''  # Google users do not have a password hash
                 )
