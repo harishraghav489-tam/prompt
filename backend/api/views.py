@@ -55,8 +55,9 @@ def verify_password(password: str, hashed: str) -> bool:
 
 def validate_college_email(email: str) -> bool:
     email_str = email.lower()
-    allowed_domains = ["@bitsathy.ac.in", "@promptbench.dev"]
-    return any(email_str.endswith(domain) for domain in allowed_domains)
+    if email_str == "admin@promptbench.dev":
+        return True
+    return email_str.endswith("@bitsathy.ac.in")
 
 
 def serialize_user(user: User) -> dict:
