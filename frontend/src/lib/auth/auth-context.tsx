@@ -129,6 +129,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem("promptwar_user");
             setUser(null);
             await supabase.auth.signOut();
+            if (typeof window !== "undefined") {
+              window.location.href = "/login?error=Only college emails ending with @bitsathy.ac.in are allowed";
+            }
           }
           await refreshTimer();
           setIsLoading(false);
