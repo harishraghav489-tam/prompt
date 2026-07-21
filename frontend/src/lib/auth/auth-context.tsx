@@ -125,10 +125,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem("promptwar_user", JSON.stringify(djangoUser));
             setUser(djangoUser);
           } catch (err) {
-            const supabaseUser = createSupabaseUser(session.user);
-            await syncSupabaseProfile(supabaseUser);
-            localStorage.setItem("promptwar_user", JSON.stringify(supabaseUser));
-            setUser(supabaseUser);
+            localStorage.removeItem("promptwar_token");
+            localStorage.removeItem("promptwar_user");
+            setUser(null);
+            await supabase.auth.signOut();
           }
           await refreshTimer();
           setIsLoading(false);
@@ -170,16 +170,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("promptwar_user", JSON.stringify(data.user));
       setUser(data.user);
     } catch (error) {
-      if (payload.email && (!payload.password || payload.provider === "google")) {
-        const demoUser = createDemoUser(payload.email);
-        const demoToken = `demo-${btoa(payload.email)}`;
-        localStorage.setItem("promptwar_token", demoToken);
-        localStorage.setItem("promptwar_user", JSON.stringify(demoUser));
-        void syncSupabaseProfile(demoUser);
-        setUser(demoUser);
-        return;
-      }
-
       throw new Error(getApiError(error));
     }
   }, []);
