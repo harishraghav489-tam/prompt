@@ -25,10 +25,28 @@ export default function RegisterPage() {
     department: "",
     password: "",
   });
+  const [emailError, setEmailError] = useState<string | null>(null);
 
+  const isCollegeEmail = (email: string) => {
+    const lower = email.trim().toLowerCase();
+    return lower === "admin@promptbench.dev" || lower.endsWith("@bitsathy.ac.in");
+  };
+
+  const handleEmailChange = (value: string) => {
+    setForm((current) => ({ ...current, email: value }));
+    if (value.trim() && !isCollegeEmail(value)) {
+      setEmailError("Only college emails ending with @bitsathy.ac.in are allowed");
+    } else {
+      setEmailError(null);
+    }
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!isCollegeEmail(form.email)) {
+      setEmailError("Only college emails ending with @bitsathy.ac.in are allowed");
+      return;
+    }
     setIsSubmitting(true);
     try {
       await register(form);
@@ -109,11 +127,12 @@ export default function RegisterPage() {
                     id="email"
                     type="email"
                     value={form.email}
-                    onChange={(event) =>
-                      setForm((current) => ({ ...current, email: event.target.value }))
-                    }
+                    onChange={(event) => handleEmailChange(event.target.value)}
                     required
                   />
+                  {emailError && (
+                    <p className="text-sm font-medium text-rose-600">{emailError}</p>
+                  )}
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="password">Password</Label>
@@ -146,7 +165,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !!emailError}>
                 {isSubmitting ? "Creating account..." : "REGISTER"}
               </Button>
             </form>

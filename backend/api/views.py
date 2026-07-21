@@ -123,6 +123,9 @@ def login(request):
     if not email or not password:
         return Response({"detail": "Missing email or password"}, status=status.HTTP_400_BAD_REQUEST)
 
+    if not validate_college_email(email):
+        return Response({"detail": "Only college emails ending with @bitsathy.ac.in are allowed"}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
         user = User.objects.get(email__iexact=email)
     except User.DoesNotExist:
