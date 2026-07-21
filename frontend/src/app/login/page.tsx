@@ -87,9 +87,6 @@ export default function LoginPage() {
       provider: "google",
       options: {
         redirectTo,
-        queryParams: {
-          hd: "bitsathy.ac.in",
-        },
       },
     });
 
