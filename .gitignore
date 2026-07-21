@@ -1,0 +1,39 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache & build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+backend/app/__pycache__/
+backend/api/__pycache__/
+backend/config/__pycache__/
+
+# Node/Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+
+# Environment files
+.env
+.env.local
+backend/.env
+frontend/.env.local
+
+# Databases
+*.db
+*.sqlite3
+promptbench.db
+backend/promptbench.db
+backend/db.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
